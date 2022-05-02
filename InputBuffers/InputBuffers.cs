@@ -11,6 +11,7 @@ namespace InputBuffers
         JUMP,
         DASH,
         ATTACK,
+        CAST_WAIT,
         CAST
     }
 
@@ -31,6 +32,7 @@ namespace InputBuffers
 
             On.HeroController.Start += HeroController_Start;
             On.HeroController.LookForQueueInput += HeroController_LookForQueueInput;
+            On.HeroController.FixedUpdate += HeroController_FixedUpdate;
 
             On.HeroController.DoWallJump += HeroController_DoWallJump;
             On.HeroController.HeroJump += HeroController_HeroJump;
@@ -100,6 +102,39 @@ namespace InputBuffers
                     Log("Buffered attack performed");
                     Reflection.DoAttack.Invoke(self, null);
                 }
+            }
+
+            orig(self);
+        }
+
+        private void HeroController_FixedUpdate(On.HeroController.orig_FixedUpdate orig, HeroController self)
+        {
+            orig(self);
+
+            if (self.acceptingInput && !GameManager.instance.isPaused && GameManager.instance.IsGameplayScene())
+            {
+                if (bufferedAction == BufferedAction.CAST_WAIT && HeroController.instance.CanCast())
+                {
+                    if (!InputHandler.Instance.inputActions.cast.IsPressed)
+                    {
+                        if (self.move_input > 0f && !self.cState.facingRight)
+                        {
+                            self.FlipSprite();
+                        }
+                        else if (self.move_input < 0f && self.cState.facingRight)
+                        {
+                            self.FlipSprite();
+                        }
+
+                        bufferedAction = BufferedAction.CAST;
+                    }
+                    else
+                    {
+                        Instance.Log("Buffered spell cast cancelled");
+                        bufferedAction = BufferedAction.NONE;
+                    }
+
+                }
 
                 if (bufferedAction == BufferedAction.CAST && HeroController.instance.CanCast())
                 {
@@ -116,8 +151,6 @@ namespace InputBuffers
                     bufferedAction = BufferedAction.NONE;
                 }
             }
-
-            orig(self);
         }
 
         private void HeroController_DoWallJump(On.HeroController.orig_DoWallJump orig, HeroController self)

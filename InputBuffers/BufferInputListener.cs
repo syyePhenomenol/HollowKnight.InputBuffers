@@ -9,7 +9,9 @@ namespace InputBuffers
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used by Unity")]
         void Update()
         {
-            if (GameManager.instance.isPaused || !GameManager.instance.IsGameplayScene()) return;
+            if (GameManager.instance.isPaused
+                || !GameManager.instance.IsGameplayScene()
+                || GameManager.instance.inventoryFSM.ActiveStateName != "Closed") return;
 
             if (InputHandler.Instance.inputActions.jump.WasPressed && InputBuffers.GS.BufferJump)
             {
@@ -144,7 +146,9 @@ namespace InputBuffers
                 if (HeroController.instance.cState.dashing)
                 {
                     InputBuffers.Instance.Log("Cast buffered while dashing");
-                    buffer = true;
+                    InputBuffers.bufferedAction = BufferedAction.CAST_WAIT;
+                    StopAllCoroutines();
+                    StartCoroutine("WaitForBufferClear");
                 }
 
                 if (HeroController.instance.cState.recoilFrozen
@@ -163,6 +167,7 @@ namespace InputBuffers
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used by Unity")]
         private IEnumerator WaitForBufferClear()
         {
             yield return new WaitForSeconds(InputBuffers.GS.BufferDuration);

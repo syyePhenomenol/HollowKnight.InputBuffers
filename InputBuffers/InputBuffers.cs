@@ -76,14 +76,27 @@ namespace InputBuffers
                     Loader = () => GS.BufferSpellCast ? 1 : 0
                 },
 
-                //new()
-                //{
-                //    Name = "Buffer Duration",
-                //    Description = "Affects the above buffers only.",
-                //    Values = new string[] { "Off", "On" },
-                //    Saver = opt => GS.EnableCompass = !GS.EnableCompass,
-                //    Loader = () => GS.EnableCompass ? 1 : 0
-                //}
+                new()
+                {
+                    Name = "Buffer Duration",
+                    Description = "Affects the above buffers only.",
+                    Values = new string[]
+                    {
+                        "50 ms (2.5 frames)",
+                        "100 ms (5 frames)",
+                        "200 ms (10 frames)",
+                        "300 ms (15 frames)",
+                        "400 ms (20 frames)",
+                        "500 ms (25 frames)",
+                        "750 ms (37.5 frames)",
+                        "1000 ms (50 frames)",
+                    },
+                    Saver = opt =>
+                    {
+                        GS.BufferDuration = opt;
+                    },
+                    Loader = () => GS.BufferDuration
+                },
 
                 new()
                 {

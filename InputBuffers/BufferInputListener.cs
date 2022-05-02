@@ -170,7 +170,20 @@ namespace InputBuffers
         [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0051:Remove unused private members", Justification = "Used by Unity")]
         private IEnumerator WaitForBufferClear()
         {
-            yield return new WaitForSeconds(InputBuffers.GS.BufferDuration);
+            float time = InputBuffers.GS.BufferDuration switch
+            {
+                0 => 0.050f,
+                1 => 0.100f,
+                2 => 0.200f,
+                3 => 0.300f,
+                4 => 0.400f,
+                5 => 0.500f,
+                6 => 0.750f,
+                7 => 1.000f,
+            };
+
+            yield return new WaitForSeconds(time);
+
             InputBuffers.bufferedAction = BufferedAction.NONE;
         }
 

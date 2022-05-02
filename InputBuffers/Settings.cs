@@ -8,7 +8,7 @@ namespace InputBuffers
         public bool BufferAttack = true;
         public bool BufferSpellCast = true;
 
-        public float BufferDuration = 0.5f;
+        public int BufferDuration = 3;
 
         public bool BufferFocus = true;
         public bool BufferDreamNail = true;

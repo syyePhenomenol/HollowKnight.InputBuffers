@@ -1,6 +1,6 @@
-﻿using Modding;
-using HutongGames.PlayMaker;
-using HutongGames.PlayMaker.Actions;
+﻿using HutongGames.PlayMaker.Actions;
+using Modding;
+using System.Collections.Generic;
 using Vasi;
 
 namespace InputBuffers
@@ -15,7 +15,7 @@ namespace InputBuffers
         CAST
     }
 
-    public class InputBuffers : Mod, IGlobalSettings<Settings>
+    public class InputBuffers : Mod, IMenuMod, IGlobalSettings<Settings>
     {
         public static InputBuffers Instance;
         public override string GetVersion() => "1.0.0";
@@ -23,6 +23,110 @@ namespace InputBuffers
         public static Settings GS = new();
         public void OnLoadGlobal(Settings gs) => GS = gs;
         public Settings OnSaveGlobal() => GS;
+
+        public List<IMenuMod.MenuEntry> GetMenuData(IMenuMod.MenuEntry? toggleButtonEntry)
+        {
+            return new ()
+            {
+                new()
+                {
+                    Name = "Buffer Jumps",
+                    Description = "",
+                    Values = new string[] { "Off", "On" },
+                    Saver = opt =>
+                    {
+                        GS.BufferJump = !GS.BufferJump;
+                    },
+                    Loader = () => GS.BufferJump ? 1 : 0
+                },
+
+                new()
+                {
+                    Name = "Buffer Dash",
+                    Description = "",
+                    Values = new string[] { "Off", "On" },
+                    Saver = opt =>
+                    {
+                        GS.BufferDash = !GS.BufferDash;
+                    },
+                    Loader = () => GS.BufferDash ? 1 : 0
+                },
+
+                new()
+                {
+                    Name = "Buffer Attacks",
+                    Description = "",
+                    Values = new string[] { "Off", "On" },
+                    Saver = opt =>
+                    {
+                        GS.BufferAttack = !GS.BufferAttack;
+                    },
+                    Loader = () => GS.BufferAttack ? 1 : 0
+                },
+
+                new()
+                {
+                    Name = "Buffer Spell Casts",
+                    Description = "",
+                    Values = new string[] { "Off", "On" },
+                    Saver = opt =>
+                    {
+                        GS.BufferSpellCast = !GS.BufferSpellCast;
+                    },
+                    Loader = () => GS.BufferSpellCast ? 1 : 0
+                },
+
+                //new()
+                //{
+                //    Name = "Buffer Duration",
+                //    Description = "Affects the above buffers only.",
+                //    Values = new string[] { "Off", "On" },
+                //    Saver = opt => GS.EnableCompass = !GS.EnableCompass,
+                //    Loader = () => GS.EnableCompass ? 1 : 0
+                //}
+
+                new()
+                {
+                    Name = "Buffer Focus",
+                    Description = "",
+                    Values = new string[] { "Off", "On" },
+                    Saver = opt =>
+                    {
+                        GS.BufferFocus = !GS.BufferFocus;
+                        SetFocusBuffer();
+                    },
+                    Loader = () => GS.BufferFocus ? 1 : 0
+                },
+
+                new()
+                {
+                    Name = "Buffer Dream Nail",
+                    Description = "",
+                    Values = new string[] { "Off", "On" },
+                    Saver = opt =>
+                    {
+                        GS.BufferDreamNail = !GS.BufferDreamNail;
+                        SetDreamNailBuffer();
+                    },
+                    Loader = () => GS.BufferDreamNail ? 1 : 0
+                },
+
+                new()
+                {
+                    Name = "Buffer Superdash",
+                    Description = "",
+                    Values = new string[] { "Off", "On" },
+                    Saver = opt =>
+                    {
+                        GS.BufferSuperdash = !GS.BufferSuperdash;
+                        SetSuperdashBuffer();
+                    },
+                    Loader = () => GS.BufferSuperdash ? 1 : 0
+                },
+            };
+        }
+
+        public bool ToggleButtonInsideMenu => false;
 
         public static BufferedAction bufferedAction = BufferedAction.NONE;
 
@@ -51,9 +155,9 @@ namespace InputBuffers
                 self.gameObject.AddComponent<BufferInputListener>();
             }
 
-            SetFocusBuffer(GS.BufferFocus);
-            SetDreamNailBuffer(GS.BufferDreamNail);
-            SetSuperdashBuffer(GS.BufferSuperdash);
+            SetFocusBuffer();
+            SetDreamNailBuffer();
+            SetSuperdashBuffer();
         }
 
         private void HeroController_LookForQueueInput(On.HeroController.orig_LookForQueueInput orig, HeroController self)
@@ -192,11 +296,13 @@ namespace InputBuffers
             bufferedAction = BufferedAction.NONE;
         }
 
-        private void SetFocusBuffer(bool value)
+        private void SetFocusBuffer()
         {
-            var fsm = HeroController.instance.spellControl;
+            var fsm = HeroController.instance?.spellControl;
 
-            if (value)
+            if (fsm == null) return;
+
+            if (GS.BufferFocus)
             {
                 fsm.GetAction<ListenForCast>("Inactive", 1).isPressed = fsm.GetAction<ListenForCast>("Inactive", 1).wasPressed;
             }
@@ -206,11 +312,13 @@ namespace InputBuffers
             }
         }
 
-        private void SetDreamNailBuffer(bool value)
+        private void SetDreamNailBuffer()
         {
-            var fsm = HeroController.instance.gameObject.LocateMyFSM("Dream Nail");
+            var fsm = HeroController.instance?.gameObject?.LocateMyFSM("Dream Nail");
 
-            if (value)
+            if (fsm == null) return;
+
+            if (GS.BufferDreamNail)
             {
                 fsm.GetAction<ListenForDreamNail>("Inactive", 0).isPressed = fsm.GetAction<ListenForDreamNail>("Inactive", 0).wasPressed;
             }
@@ -220,11 +328,13 @@ namespace InputBuffers
             }
         }
 
-        private void SetSuperdashBuffer(bool value)
+        private void SetSuperdashBuffer()
         {
-            var fsm = HeroController.instance.superDash;
+            var fsm = HeroController.instance?.superDash;
 
-            if (value)
+            if (fsm == null) return;
+
+            if (GS.BufferSuperdash)
             {
                 fsm.GetAction<ListenForSuperdash>("Inactive", 0).isPressed = fsm.GetAction<ListenForSuperdash>("Inactive", 0).wasPressed;
             }

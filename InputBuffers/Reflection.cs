@@ -16,6 +16,7 @@ namespace InputBuffers
         
         public static readonly MethodInfo CanDoubleJump = typeof(HeroController).GetMethod("CanDoubleJump", BindingFlags.Instance | BindingFlags.NonPublic);
         public static readonly MethodInfo DoDoubleJump = typeof(HeroController).GetMethod("DoDoubleJump", BindingFlags.Instance | BindingFlags.NonPublic);
+        public static readonly FieldInfo doubleJumpQueuing = typeof(HeroController).GetField("doubleJumpQueuing", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public static readonly MethodInfo CanDash = typeof(HeroController).GetMethod("CanDash", BindingFlags.Instance | BindingFlags.NonPublic);
         public static readonly MethodInfo HeroDash = typeof(HeroController).GetMethod("HeroDash", BindingFlags.Instance | BindingFlags.NonPublic);

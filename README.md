@@ -1,29 +1,16 @@
 # Input Buffers
 Hollow Knight mod that allows for various input buffers. Requires [Vasi](https://github.com/fifty-six/HollowKnight.Vasi/tree/master/Vasi).
 
-You can buffer jumps during:
-- Focus/Spells/Superdash/Dream Nail
-- Falling without being able to double jump
-- Dashing
-- Recoiling
+The mod provides toggles (in Mod Menu) for buffering the following inputs:
+- Jump
+- Dash
+- Attack
+- Cast
+- Quick Cast
+- Focus
+- Dream Nail
+- Superdash
 
-You can buffer dash during:
-- Focus/Spells/Superdash/Dream Nail
-- In mid-air after dash was already used
-- During dash cooldown
-- Recoiling
+You can also adjust the duration that a buffered input lasts for. Default is 300 ms.
 
-You can buffer attacks during:
-- Focus/Spells/Superdash/Dream Nail
-- During attack cooldown
-- Dashing
-- Recoiling
-
-You can buffer spell casts during:
-- Focus/Spells/Superdash/Dream Nail
-- Dashing
-- Recoiling
-
-The duration of the above inputs being buffered can be controlled with a global setting.
-
-You can also buffer Focus, Dream Nail and Superdash (not controlled by a buffer duration, since they always rely on the input being held).
+There is also a toggle to auto-release superdash. When the setting is on, you need to hold the direction you are facing.

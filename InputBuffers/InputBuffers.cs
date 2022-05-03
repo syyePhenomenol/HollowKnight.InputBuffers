@@ -21,7 +21,7 @@ namespace InputBuffers
     public class InputBuffers : Mod, IMenuMod, IGlobalSettings<Settings>
     {
         public static InputBuffers Instance;
-        public override string GetVersion() => "1.0.1";
+        public override string GetVersion() => "1.0.2";
 
         public static Settings GS = new();
         public void OnLoadGlobal(Settings gs) => GS = gs;
@@ -77,23 +77,23 @@ namespace InputBuffers
                 {
                     if (InputHandler.Instance.inputActions.jump.IsPressed)
                     {
-                        if ((bool)Reflection.CanWallJump.Invoke(self, null))
+                        if (ReflectionHelper.CallMethod<HeroController, bool>(self, "CanWallJump"))
                         {
                             //Log("Buffered wall jump performed");
-                            Reflection.DoWallJump.Invoke(self, null);
-                            Reflection.doubleJumpQueuing.SetValue(self, false);
+                            ReflectionHelper.CallMethod(self, "DoWallJump");
+                            ReflectionHelper.SetField(self, "doubleJumpQueuing", false);
                             return;
                         }
-                        else if ((bool)Reflection.CanJump.Invoke(self, null))
+                        else if (ReflectionHelper.CallMethod<HeroController, bool>(self, "CanJump"))
                         {
                             //Log("Buffered jump performed");
-                            Reflection.HeroJump.Invoke(self, null);
+                            ReflectionHelper.CallMethod(self, "HeroJump");
                             return;
                         }
-                        else if ((bool)Reflection.CanDoubleJump.Invoke(self, null))
+                        else if (ReflectionHelper.CallMethod<HeroController, bool>(self, "CanDoubleJump"))
                         {
                             //Log("Buffered double jump performed");
-                            Reflection.DoDoubleJump.Invoke(self, null);
+                            ReflectionHelper.CallMethod(self, "DoDoubleJump");
                             return;
                         }
                     }
@@ -105,15 +105,15 @@ namespace InputBuffers
                 }
 
                 if (bufferedAction == BufferedAction.DASH
-                    && (bool)Reflection.CanDash.Invoke(self, null))
+                    && ReflectionHelper.CallMethod<HeroController, bool>(self, "CanDash"))
                 {
                     //Log("Buffered dash performed");
-                    Reflection.HeroDash.Invoke(self, null);
+                    ReflectionHelper.CallMethod(self, "HeroDash");
                     return;
                 }
 
                 if (bufferedAction == BufferedAction.ATTACK
-                    && (bool)Reflection.CanAttack.Invoke(self, null))
+                    && ReflectionHelper.CallMethod<HeroController, bool>(self, "CanAttack"))
                 {
                     if (((InputHandler.Instance.inputActions.left.IsPressed || InputHandler.Instance.inputActions.left.WasPressed) && self.cState.facingRight)
                         || ((InputHandler.Instance.inputActions.right.IsPressed || InputHandler.Instance.inputActions.right.WasPressed) && !self.cState.facingRight))
@@ -123,7 +123,7 @@ namespace InputBuffers
                     else
                     {
                         //Log("Buffered attack performed");
-                        Reflection.DoAttack.Invoke(self, null);
+                        ReflectionHelper.CallMethod(self, "DoAttack");
                         return;
                     }
                 }

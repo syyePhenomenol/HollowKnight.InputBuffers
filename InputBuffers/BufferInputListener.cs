@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Modding;
+using System.Collections;
 using UnityEngine;
 using Vasi;
 
@@ -29,7 +30,7 @@ namespace InputBuffers
                 }
                 else if (HeroController.instance.cState.falling
                     && !HeroController.instance.cState.wallSliding
-                    && !(bool) Reflection.CanDoubleJump.Invoke(HeroController.instance, null))
+                    && !ReflectionHelper.CallMethod<HeroController, bool>(HeroController.instance, "CanDoubleJump"))
                 {
                     //InputBuffers.Instance.Log("Jump buffered while falling without double jump");
                     buffer = true;
@@ -68,12 +69,13 @@ namespace InputBuffers
                     //InputBuffers.Instance.Log("Dash buffered while hard landing");
                     buffer = true;
                 }
-                else if ((bool) Reflection.airDashed.GetValue(HeroController.instance))
+                else if (ReflectionHelper.GetField<HeroController, bool>(HeroController.instance, "airDashed"))
                 {
+                    
                     //InputBuffers.Instance.Log("Dash buffered after dash used in midair");
                     buffer = true;
                 }
-                else if ((float) Reflection.dashCooldownTimer.GetValue(HeroController.instance) > 0f)
+                else if (ReflectionHelper.GetField<HeroController, float>(HeroController.instance, "dashCooldownTimer") > 0f)
                 {
                     //InputBuffers.Instance.Log("Dash buffered during dash cooldown");
                     buffer = true;
@@ -106,8 +108,9 @@ namespace InputBuffers
                 {
                     //InputBuffers.Instance.Log("Attack buffered while hard landing");
                     buffer = true;
+                    
                 }
-                else if ((float) Reflection.attack_cooldown.GetValue(HeroController.instance) > 0f)
+                else if (ReflectionHelper.GetField<HeroController, float>(HeroController.instance, "attack_cooldown") > 0f)
                 {
                     //InputBuffers.Instance.Log("Attack buffered during attack cooldown");
                     buffer = true;

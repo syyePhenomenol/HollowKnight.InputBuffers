@@ -1,8 +1,11 @@
 ﻿using HutongGames.PlayMaker;
-using HutongGames.PlayMaker.Actions;
 using Modding;
 using System.Collections.Generic;
 using Vasi;
+using BIL = InputBuffers.BufferInputListener;
+using IH = InputHandler;
+using HC = HeroController;
+using RH = Modding.ReflectionHelper;
 
 namespace InputBuffers
 {
@@ -12,8 +15,8 @@ namespace InputBuffers
         JUMP,
         DASH,
         ATTACK,
-        QUICK_CAST,
         CAST,
+        QUICK_CAST,
         DREAM_NAIL,
         SUPERDASH
     }
@@ -52,18 +55,18 @@ namespace InputBuffers
             On.PlayMakerFSM.OnEnable += PlayMakerFSM_OnEnable;
         }
 
-        private void HeroController_Start(On.HeroController.orig_Start orig, HeroController self)
+        private void HeroController_Start(On.HeroController.orig_Start orig, HC self)
         {
             orig(self);
 
-            if (self.GetComponent<BufferInputListener>() == null)
+            if (self.GetComponent<BIL>() == null)
             {
                 //Log("Adding BufferInputListener");
-                self.gameObject.AddComponent<BufferInputListener>();
+                self.gameObject.AddComponent<BIL>();
             }
         }
 
-        private void HeroController_FixedUpdate(On.HeroController.orig_FixedUpdate orig, HeroController self)
+        private void HeroController_FixedUpdate(On.HeroController.orig_FixedUpdate orig, HC self)
         {
             if (GameManager.instance.isPaused || !GameManager.instance.IsGameplayScene())
             {
@@ -73,27 +76,27 @@ namespace InputBuffers
 
             if (self.acceptingInput)
             {
-                if (bufferedAction == BufferedAction.JUMP && !HeroController.instance.cState.dashing)
+                if (bufferedAction == BufferedAction.JUMP && !HC.instance.cState.dashing)
                 {
-                    if (InputHandler.Instance.inputActions.jump.IsPressed)
+                    if (IH.Instance.inputActions.jump.IsPressed)
                     {
-                        if (ReflectionHelper.CallMethod<HeroController, bool>(self, "CanWallJump"))
+                        if (RH.CallMethod<HC, bool>(self, "CanWallJump"))
                         {
                             //Log("Buffered wall jump performed");
-                            ReflectionHelper.CallMethod(self, "DoWallJump");
-                            ReflectionHelper.SetField(self, "doubleJumpQueuing", false);
+                            RH.CallMethod(self, "DoWallJump");
+                            RH.SetField(self, "doubleJumpQueuing", false);
                             return;
                         }
-                        else if (ReflectionHelper.CallMethod<HeroController, bool>(self, "CanJump"))
+                        else if (RH.CallMethod<HC, bool>(self, "CanJump"))
                         {
                             //Log("Buffered jump performed");
-                            ReflectionHelper.CallMethod(self, "HeroJump");
+                            RH.CallMethod(self, "HeroJump");
                             return;
                         }
-                        else if (ReflectionHelper.CallMethod<HeroController, bool>(self, "CanDoubleJump"))
+                        else if (RH.CallMethod<HC, bool>(self, "CanDoubleJump"))
                         {
                             //Log("Buffered double jump performed");
-                            ReflectionHelper.CallMethod(self, "DoDoubleJump");
+                            RH.CallMethod(self, "DoDoubleJump");
                             return;
                         }
                     }
@@ -105,132 +108,132 @@ namespace InputBuffers
                 }
 
                 if (bufferedAction == BufferedAction.DASH
-                    && ReflectionHelper.CallMethod<HeroController, bool>(self, "CanDash"))
+                    && RH.CallMethod<HC, bool>(self, "CanDash"))
                 {
                     //Log("Buffered dash performed");
-                    ReflectionHelper.CallMethod(self, "HeroDash");
+                    RH.CallMethod(self, "HeroDash");
                     return;
                 }
 
                 if (bufferedAction == BufferedAction.ATTACK
-                    && ReflectionHelper.CallMethod<HeroController, bool>(self, "CanAttack"))
+                    && RH.CallMethod<HC, bool>(self, "CanAttack"))
                 {
-                    if (((InputHandler.Instance.inputActions.left.IsPressed || InputHandler.Instance.inputActions.left.WasPressed) && self.cState.facingRight)
-                        || ((InputHandler.Instance.inputActions.right.IsPressed || InputHandler.Instance.inputActions.right.WasPressed) && !self.cState.facingRight))
+                    if (((IH.Instance.inputActions.left.IsPressed || IH.Instance.inputActions.left.WasPressed) && self.cState.facingRight)
+                        || ((IH.Instance.inputActions.right.IsPressed || IH.Instance.inputActions.right.WasPressed) && !self.cState.facingRight))
                     {
                         //Instance.Log("Knight not facing correctly, buffered attack not performed yet");
                     }
                     else
                     {
                         //Log("Buffered attack performed");
-                        ReflectionHelper.CallMethod(self, "DoAttack");
+                        RH.CallMethod(self, "DoAttack");
                         return;
                     }
                 }
 
-                if (bufferedAction == BufferedAction.CAST && HeroController.instance.spellControl.ActiveStateName != "Button Down")
+                if (bufferedAction == BufferedAction.CAST && HC.instance.spellControl.ActiveStateName != "Button Down")
                 {
-                    if (HeroController.instance.CanCast()
-                        && !InputHandler.Instance.inputActions.cast.IsPressed
+                    if (HC.instance.CanCast()
+                        && !IH.Instance.inputActions.cast.IsPressed
                         && GS.BufferQuickCast)
                     {
-                        if (((InputHandler.Instance.inputActions.left.IsPressed || InputHandler.Instance.inputActions.left.WasPressed) && self.cState.facingRight)
-                            || ((InputHandler.Instance.inputActions.right.IsPressed || InputHandler.Instance.inputActions.right.WasPressed) && !self.cState.facingRight))
+                        if (((IH.Instance.inputActions.left.IsPressed || IH.Instance.inputActions.left.WasPressed) && self.cState.facingRight)
+                            || ((IH.Instance.inputActions.right.IsPressed || IH.Instance.inputActions.right.WasPressed) && !self.cState.facingRight))
                         {
                             //Instance.Log("Knight not facing correctly, buffered quick cast not performed yet");
                         }
                         else
                         {
                             //Instance.Log("Buffered cast performed as spell");
-                            HeroController.instance.spellControl.SendEvent("BUTTON DOWN");
+                            HC.instance.spellControl.SendEvent("BUTTON DOWN");
                             return;
                         }
                     }
-                    else if (HeroController.instance.CanFocus()
-                        && InputHandler.Instance.inputActions.cast.IsPressed
+                    else if (HC.instance.CanFocus()
+                        && IH.Instance.inputActions.cast.IsPressed
                         && GS.BufferCast)
                     {
                         //Instance.Log("Buffered cast performed as focus");
-                        HeroController.instance.spellControl.SendEvent("BUTTON DOWN");
+                        HC.instance.spellControl.SendEvent("BUTTON DOWN");
                         return;
                     }
                 }
 
-                if (bufferedAction == BufferedAction.QUICK_CAST && HeroController.instance.CanCast())
+                if (bufferedAction == BufferedAction.QUICK_CAST && HC.instance.CanCast())
                 {
-                    if (((InputHandler.Instance.inputActions.left.IsPressed || InputHandler.Instance.inputActions.left.WasPressed) && self.cState.facingRight)
-                        || ((InputHandler.Instance.inputActions.right.IsPressed || InputHandler.Instance.inputActions.right.WasPressed) && !self.cState.facingRight))
+                    if (((IH.Instance.inputActions.left.IsPressed || IH.Instance.inputActions.left.WasPressed) && self.cState.facingRight)
+                        || ((IH.Instance.inputActions.right.IsPressed || IH.Instance.inputActions.right.WasPressed) && !self.cState.facingRight))
                     {
                         //Instance.Log("Knight not facing correctly, buffered quick cast not performed yet");
                     }
                     else
                     {
                         //Instance.Log("Buffered quick cast performed");
-                        HeroController.instance.spellControl.SendEvent("QUICK CAST");
+                        HC.instance.spellControl.SendEvent("QUICK CAST");
                         return;
                     }
                 }
 
                 if (bufferedAction == BufferedAction.DREAM_NAIL
-                    && HeroController.instance.CanDreamNail()
-                    && InputHandler.Instance.inputActions.dreamNail.IsPressed)
+                    && HC.instance.CanDreamNail()
+                    && IH.Instance.inputActions.dreamNail.IsPressed)
                 {
-                    if (((InputHandler.Instance.inputActions.left.IsPressed || InputHandler.Instance.inputActions.left.WasPressed) && self.cState.facingRight)
-                        || ((InputHandler.Instance.inputActions.right.IsPressed || InputHandler.Instance.inputActions.right.WasPressed) && !self.cState.facingRight))
+                    if (((IH.Instance.inputActions.left.IsPressed || IH.Instance.inputActions.left.WasPressed) && self.cState.facingRight)
+                        || ((IH.Instance.inputActions.right.IsPressed || IH.Instance.inputActions.right.WasPressed) && !self.cState.facingRight))
                     {
                         //Instance.Log("Knight not facing correctly, buffered dream nail not performed yet");
                     }
                     else
                     {
                         //Instance.Log("Buffered dream nail performed");
-                        HeroController.instance.gameObject.LocateMyFSM("Dream Nail").SendEvent("BUTTON DOWN");
+                        HC.instance.gameObject.LocateMyFSM("Dream Nail").SendEvent("BUTTON DOWN");
                         return;
                     }
                 }
 
                 if (bufferedAction == BufferedAction.SUPERDASH
-                    && HeroController.instance.CanSuperDash()
-                    && InputHandler.Instance.inputActions.superDash.IsPressed)
+                    && HC.instance.CanSuperDash()
+                    && IH.Instance.inputActions.superDash.IsPressed)
                 {
-                    if (HeroController.instance.hero_state != GlobalEnums.ActorStates.airborne
-                        && (((InputHandler.Instance.inputActions.left.IsPressed || InputHandler.Instance.inputActions.left.WasPressed) && self.cState.facingRight)
-                            || ((InputHandler.Instance.inputActions.right.IsPressed || InputHandler.Instance.inputActions.right.WasPressed) && !self.cState.facingRight)))
+                    if (HC.instance.hero_state != GlobalEnums.ActorStates.airborne
+                        && (((IH.Instance.inputActions.left.IsPressed || IH.Instance.inputActions.left.WasPressed) && self.cState.facingRight)
+                            || ((IH.Instance.inputActions.right.IsPressed || IH.Instance.inputActions.right.WasPressed) && !self.cState.facingRight)))
                     {
                         //Instance.Log("Knight not facing correctly, buffered superdash not performed yet");
                     }
                     else
                     {
                         //Instance.Log("Buffered superdash performed");
-                        HeroController.instance.superDash.SendEvent("BUTTON DOWN");
+                        HC.instance.superDash.SendEvent("BUTTON DOWN");
                         return;
                     }
                 }
             }
 
             if (GS.SuperdashRelease
-                && ((HeroController.instance.superDash.ActiveStateName == "Ground Charged"
-                        && (((InputHandler.Instance.inputActions.left.IsPressed || InputHandler.Instance.inputActions.left.WasPressed) && !self.cState.facingRight)
-                            || ((InputHandler.Instance.inputActions.right.IsPressed || InputHandler.Instance.inputActions.right.WasPressed) && self.cState.facingRight)))
-                    || (HeroController.instance.superDash.ActiveStateName == "Wall Charged"
-                        && (((InputHandler.Instance.inputActions.left.IsPressed || InputHandler.Instance.inputActions.left.WasPressed) && self.cState.facingRight)
-                            || ((InputHandler.Instance.inputActions.right.IsPressed || InputHandler.Instance.inputActions.right.WasPressed) && !self.cState.facingRight)))))
+                && ((HC.instance.superDash.ActiveStateName == "Ground Charged"
+                        && (((IH.Instance.inputActions.left.IsPressed || IH.Instance.inputActions.left.WasPressed) && !self.cState.facingRight)
+                            || ((IH.Instance.inputActions.right.IsPressed || IH.Instance.inputActions.right.WasPressed) && self.cState.facingRight)))
+                    || (HC.instance.superDash.ActiveStateName == "Wall Charged"
+                        && (((IH.Instance.inputActions.left.IsPressed || IH.Instance.inputActions.left.WasPressed) && self.cState.facingRight)
+                            || ((IH.Instance.inputActions.right.IsPressed || IH.Instance.inputActions.right.WasPressed) && !self.cState.facingRight)))))
             {
                 //Instance.Log("Superdash released");
-                HeroController.instance.superDash.SendEvent("BUTTON UP");
+                HC.instance.superDash.SendEvent("BUTTON UP");
                 return;
             }
 
             orig(self);
         }
 
-        private void HeroController_DoWallJump(On.HeroController.orig_DoWallJump orig, HeroController self)
+        private void HeroController_DoWallJump(On.HeroController.orig_DoWallJump orig, HC self)
         {
             orig(self);
 
             //Log("Buffer cleared on wall jump");
             bufferedAction = BufferedAction.NONE;
         }
-        private void HeroController_HeroJump(On.HeroController.orig_HeroJump orig, HeroController self)
+        private void HeroController_HeroJump(On.HeroController.orig_HeroJump orig, HC self)
         {
             orig(self);
 
@@ -238,7 +241,7 @@ namespace InputBuffers
             bufferedAction = BufferedAction.NONE;
         }
 
-        private void HeroController_DoDoubleJump(On.HeroController.orig_DoDoubleJump orig, HeroController self)
+        private void HeroController_DoDoubleJump(On.HeroController.orig_DoDoubleJump orig, HC self)
         {
             orig(self);
 
@@ -246,7 +249,7 @@ namespace InputBuffers
             bufferedAction = BufferedAction.NONE;
         }
 
-        private void HeroController_HeroDash(On.HeroController.orig_HeroDash orig, HeroController self)
+        private void HeroController_HeroDash(On.HeroController.orig_HeroDash orig, HC self)
         {
             orig(self);
 
@@ -254,7 +257,7 @@ namespace InputBuffers
             bufferedAction = BufferedAction.NONE;
         }
 
-        private void HeroController_DoAttack(On.HeroController.orig_DoAttack orig, HeroController self)
+        private void HeroController_DoAttack(On.HeroController.orig_DoAttack orig, HC self)
         {
             orig(self);
 

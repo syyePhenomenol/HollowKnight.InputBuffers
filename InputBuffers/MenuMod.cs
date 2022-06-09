@@ -1,5 +1,6 @@
 ﻿using Modding;
 using System.Collections.Generic;
+using IB = InputBuffers.InputBuffers;
 
 namespace InputBuffers
 {
@@ -14,9 +15,9 @@ namespace InputBuffers
                 Values = new string[] { "Off", "On" },
                 Saver = opt =>
                 {
-                    InputBuffers.GS.BufferJump = !InputBuffers.GS.BufferJump;
+                    IB.GS.BufferJump = !IB.GS.BufferJump;
                 },
-                Loader = () => InputBuffers.GS.BufferJump ? 1 : 0
+                Loader = () => IB.GS.BufferJump ? 1 : 0
             },
 
             new()
@@ -26,9 +27,9 @@ namespace InputBuffers
                 Values = new string[] { "Off", "On" },
                 Saver = opt =>
                 {
-                    InputBuffers.GS.BufferDash = !InputBuffers.GS.BufferDash;
+                    IB.GS.BufferDash = !IB.GS.BufferDash;
                 },
-                Loader = () => InputBuffers.GS.BufferDash ? 1 : 0
+                Loader = () => IB.GS.BufferDash ? 1 : 0
             },
 
             new()
@@ -38,9 +39,9 @@ namespace InputBuffers
                 Values = new string[] { "Off", "On" },
                 Saver = opt =>
                 {
-                    InputBuffers.GS.BufferAttack = !InputBuffers.GS.BufferAttack;
+                    IB.GS.BufferAttack = !IB.GS.BufferAttack;
                 },
-                Loader = () => InputBuffers.GS.BufferAttack ? 1 : 0
+                Loader = () => IB.GS.BufferAttack ? 1 : 0
             },
 
             new()
@@ -50,9 +51,9 @@ namespace InputBuffers
                 Values = new string[] { "Off", "On" },
                 Saver = opt =>
                 {
-                    InputBuffers.GS.BufferCast = !InputBuffers.GS.BufferCast;
+                    IB.GS.BufferCast = !IB.GS.BufferCast;
                 },
-                Loader = () => InputBuffers.GS.BufferCast ? 1 : 0
+                Loader = () => IB.GS.BufferCast ? 1 : 0
             },
 
             new()
@@ -62,9 +63,9 @@ namespace InputBuffers
                 Values = new string[] { "Off", "On" },
                 Saver = opt =>
                 {
-                    InputBuffers.GS.BufferQuickCast = !InputBuffers.GS.BufferQuickCast;
+                    IB.GS.BufferQuickCast = !IB.GS.BufferQuickCast;
                 },
-                Loader = () => InputBuffers.GS.BufferQuickCast ? 1 : 0
+                Loader = () => IB.GS.BufferQuickCast ? 1 : 0
             },
 
             new()
@@ -74,9 +75,9 @@ namespace InputBuffers
                 Values = new string[] { "Off", "On" },
                 Saver = opt =>
                 {
-                    InputBuffers.GS.BufferDreamNail = !InputBuffers.GS.BufferDreamNail;
+                    IB.GS.BufferDreamNail = !IB.GS.BufferDreamNail;
                 },
-                Loader = () => InputBuffers.GS.BufferDreamNail ? 1 : 0
+                Loader = () => IB.GS.BufferDreamNail ? 1 : 0
             },
 
             new()
@@ -86,9 +87,9 @@ namespace InputBuffers
                 Values = new string[] { "Off", "On" },
                 Saver = opt =>
                 {
-                    InputBuffers.GS.BufferSuperdash = !InputBuffers.GS.BufferSuperdash;
+                    IB.GS.BufferSuperdash = !IB.GS.BufferSuperdash;
                 },
-                Loader = () => InputBuffers.GS.BufferSuperdash ? 1 : 0
+                Loader = () => IB.GS.BufferSuperdash ? 1 : 0
             },
 
             new()
@@ -108,9 +109,9 @@ namespace InputBuffers
                     },
                 Saver = opt =>
                 {
-                    InputBuffers.GS.BufferDuration = opt;
+                    IB.GS.BufferDuration = opt;
                 },
-                Loader = () => InputBuffers.GS.BufferDuration
+                Loader = () => IB.GS.BufferDuration
             },
 
             new()
@@ -120,9 +121,9 @@ namespace InputBuffers
                 Values = new string[] { "Off", "On" },
                 Saver = opt =>
                 {
-                    InputBuffers.GS.SuperdashRelease = !InputBuffers.GS.SuperdashRelease;
+                    IB.GS.SuperdashRelease = !IB.GS.SuperdashRelease;
                 },
-                Loader = () => InputBuffers.GS.SuperdashRelease ? 1 : 0
+                Loader = () => IB.GS.SuperdashRelease ? 1 : 0
             }
         };
     }

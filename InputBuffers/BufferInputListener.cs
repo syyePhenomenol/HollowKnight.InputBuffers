@@ -21,7 +21,8 @@ namespace InputBuffers
             {
                 bool buffer = false;
 
-                if (HC.instance.controlReqlinquished)
+                if (HC.instance.controlReqlinquished
+                    && HC.instance.gameObject.LocateMyFSM("Surface Water").ActiveStateName != "Frame")
                 {
                     //IB.Instance.Log("Jump buffered while control relinquished");
                     buffer = true;

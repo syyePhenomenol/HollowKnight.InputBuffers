@@ -24,7 +24,7 @@ namespace InputBuffers
     public class InputBuffers : Mod, IMenuMod, IGlobalSettings<Settings>
     {
         public static InputBuffers Instance;
-        public override string GetVersion() => "1.0.3";
+        public override string GetVersion() => "1.0.4";
 
         public static Settings GS = new();
         public void OnLoadGlobal(Settings gs) => GS = gs;

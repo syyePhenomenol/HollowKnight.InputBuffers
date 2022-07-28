@@ -129,7 +129,7 @@ namespace InputBuffers
             new()
             {
                 Name = "Clear Buffer On Hit",
-                Description = "When getting hit, clear the buffer since you may need to reconsider the next move.",
+                Description = "",
                 Values = new string[] { "Off", "On" },
                 Saver = opt =>
                 {

@@ -74,6 +74,12 @@ namespace InputBuffers
                 return;
             }
 
+            // Clear buffer on hit.
+            if(GS.ClearBufferOnHit && HC.instance.cState.recoilFrozen && bufferedAction != BufferedAction.JUMP)
+            {
+                bufferedAction = BufferedAction.NONE;
+            }
+
             if (self.acceptingInput)
             {
                 if (bufferedAction == BufferedAction.JUMP && !HC.instance.cState.dashing)

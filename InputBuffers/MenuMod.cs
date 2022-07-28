@@ -124,6 +124,18 @@ namespace InputBuffers
                     IB.GS.SuperdashRelease = !IB.GS.SuperdashRelease;
                 },
                 Loader = () => IB.GS.SuperdashRelease ? 1 : 0
+            },
+
+            new()
+            {
+                Name = "Clear Buffer On Hit",
+                Description = "When getting hit, clear the buffer since you may need to reconsider the next move.",
+                Values = new string[] { "Off", "On" },
+                Saver = opt =>
+                {
+                    IB.GS.ClearBufferOnHit = !IB.GS.ClearBufferOnHit;
+                },
+                Loader = () => IB.GS.ClearBufferOnHit ? 1 : 0
             }
         };
     }

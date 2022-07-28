@@ -15,5 +15,6 @@ namespace InputBuffers
 
         public bool SuperdashRelease = false;
 
+        public bool ClearBufferOnHit = false;
     }
 }
